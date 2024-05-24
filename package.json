@@ -1,0 +1,33 @@
+{
+  "name": "@incharge/transcript-cli",
+  "version": "v0.0.4-alpha.1",
+  "description": "Work in progress - Command-line interface (CLI) for processing transcripts",
+  "author": "Julian Price, inCharge Ltd, UK",
+  "license": "ISC",
+  "type": "module",
+  "main": "./bin/index.js",
+  "module": "./bin/index.js",
+  "bin": {  
+    "transcript-cli": "./bin/index.js"  
+  },
+  "files": [
+    "./bin/index.js"
+  ],
+  "scripts": {
+    "clean": "rm -rf bin",
+    "compile": "tsc",
+    "link": "npm link @incharge/transcript-core",
+    "test": "node ./bin/index.js test/924-aws-pretty.json test/924-ic-test.json",
+    "dev": "npm run compile && npm run test",
+    "watch": "npx nodemon -e ts --watch src --exec \"npm run dev\" && exit 1",
+    "prepublishOnly": "npm run clean && npm run compile"
+  },
+  "dependencies": {
+    "minimist": "^1.2.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "@types/node": "^20.12.12",
+    "@types/minimist": "^1.2.5"
+  }
+}
