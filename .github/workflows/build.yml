@@ -40,7 +40,7 @@ jobs:
           default_author: github_actions
           message: "Build files"
           # add dist folder and the @types folder
-          add: "dist"
+          add: "bin"
           commit: --signoff
           push: true
       - name: NPM Publish
