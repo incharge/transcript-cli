@@ -59,19 +59,19 @@
 // }
 // testMax();
 
-const copyProperties: Array<string> = ['title', 'episodeid', 'publishDate', 'excerpt', 'youtubeid', 'audiourl', 'image', 'tags', 'itunesEpisodeUrl', 'spotifyEpisodeUrl', 'transcript', 'vtt'];
-const dataDict: object = { episodeid: 'ha' };
-const episodeDict: object = { };
-console.log("of:")
-for (const x of copyProperties) {
-    console.log(x);
-    // episodeDict[x] = dataDict[x];
-}
-console.log("in:")
-for (const x in copyProperties) {
-    console.log(x);
-    // episodeDict[x] = dataDict[x];
-}
+// const copyProperties: Array<string> = ['title', 'episodeid', 'publishDate', 'excerpt', 'youtubeid', 'audiourl', 'image', 'tags', 'itunesEpisodeUrl', 'spotifyEpisodeUrl', 'transcript', 'vtt'];
+// const dataDict: object = { episodeid: 'ha' };
+// const episodeDict: object = { };
+// console.log("of:")
+// for (const x of copyProperties) {
+//     console.log(x);
+//     // episodeDict[x] = dataDict[x];
+// }
+// console.log("in:")
+// for (const x in copyProperties) {
+//     console.log(x);
+//     // episodeDict[x] = dataDict[x];
+// }
 
 // --outfile final.js 
 // clear && npx tsc src/harness.ts --outfile bin/harness.js && node bin/harness.js

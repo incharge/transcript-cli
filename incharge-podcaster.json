@@ -1,0 +1,68 @@
+{
+    "episode-folder": "episode",
+    "page-folder": "md",
+    "source": {
+        "Youtube via RSS": {
+            "type": "youtube-rss",
+            "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCTUcatGD6xu4tAcxG-1D4Bg",
+            "primary": true,
+            "ignore": true
+        },
+        "Youtube via API": {
+            "type": "youtube-api",
+            "channel": "UCTUcatGD6xu4tAcxG-1D4Bg",
+            "playlist": "UUTUcatGD6xu4tAcxG-1D4Bg",
+            "only-new": true,
+            "primary": true
+        },
+        "Spotify": {
+            "type": "rss",
+            "url": "https://anchor.fm/s/822ba20/podcast/rss",
+            "only-new": true,
+            "primary": false
+        },
+        "itunes": {
+            "type": "itunes",
+            "primary": false,
+            "ignore": false,
+            "id": 1451347236,
+            "only-new": true
+        },        
+        "AWS Transcribe": {
+            "type": "transcript",
+            "ignore": false
+        }
+    },
+    "bucket": "thedissenter",
+    "ums": ["um", "uh", "mhm"],
+    "transcript-disclaimer": "<p class=\"text-muted text-sm bg-slate-200 rounded p-1 text-center\">Transcripts are automatically generated and may contain errors</p>\n",
+    "defaults": {
+        "interviewer": ["Ricardo Lopes"]
+    },
+    "episodes": [
+        {
+            "episodeid": "60",
+            "interviewee": ["Fernanda Drumond"]
+        },
+        {
+            "episodeid": "235",
+            "interviewee": ["Daniel Glass", "Niruban Balachandran"]
+        },
+        {
+            "episodeid": "461",
+            "interviewee": ["David Buss"]
+        },
+        {
+            "episodeid": "563",
+            "interviewee": ["Robert Brooks"]
+        },
+        {
+            "episodeid": "585",
+            "interviewee": ["Philippe Rochat"]
+        },
+        {
+            "episodeid": "619",
+            "interviewee": ["Philip Dwyer"]
+        }
+    ]
+}

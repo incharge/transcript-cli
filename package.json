@@ -5,23 +5,21 @@
   "author": "Julian Price, inCharge Ltd, UK",
   "license": "ISC",
   "type": "module",
-  "main": "./bin/awstoic.js",
-  "module": "./bin/awstoic.js",
+  "main": "./bin/cli.mjs",
+  "module": "./bin/cli.mjs",
   "bin": {
-    "awstoic": "./bin/awstoic.js",
-    "createpages": "./bin/createpages.js"
+    "cli": "./bin/cli.mjs"
   },
   "files": [
-    "./bin/awstoic.js",
-    "./bin/createpages.js"
+    "bin/"
   ],
   "scripts": {
     "clean": "rm -rf bin",
     "compile": "tsc",
     "link": "npm link @incharge/transcript-core",
-    "test": "node ./bin/awstoic.js test/924-aws-pretty.json test/924-ic-test.json",
+    "test": "node ./bin/cli.js awstoic test/924-aws-pretty.json test/924-ic-test.json",
     "dev": "npm run compile && npm run test",
-    "watch": "npx nodemon -e ts --watch src --exec \"npm run compile\" && exit 1",
+    "watch": "npx nodemon -e ts --watch src --exec \"npm run dev\" && exit 1",
     "prepublishOnly": "npm run clean && npm run compile"
   },
   "dependencies": {
