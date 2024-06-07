@@ -23,7 +23,7 @@
     "prepublishOnly": "npm run clean && npm run compile"
   },
   "dependencies": {
-    "@incharge/transcript-core": "^0.0.4-alpha.2",
+    "@incharge/transcript-core": "^0.0.4-alpha.6",
     "minimist": "^1.2.8"
   },
   "devDependencies": {
