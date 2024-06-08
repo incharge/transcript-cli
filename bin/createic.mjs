@@ -89,7 +89,7 @@ async function AwsFileToIcFile(inFile, episodeFile, outFile, config) {
         }
         return e;
     }
-    icTranscript.url = episode.itunesEpisodeUrl;
+    icTranscript.url = episode.spotifyAudioUrl;
     icTranscript.speakers.push(config.defaults.interviewer[0]);
     icTranscript.speakers.push(...episode.interviewee);
     let result = await awsToIcLines(awsTranscript);

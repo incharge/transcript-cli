@@ -103,7 +103,7 @@ async function  AwsFileToIcFile(inFile: string, episodeFile: string, outFile: st
         return e;
     }
 
-    icTranscript.url = episode.itunesEpisodeUrl;
+    icTranscript.url = episode.spotifyAudioUrl;
     icTranscript.speakers.push(config.defaults.interviewer[0]);
     icTranscript.speakers.push(...episode.interviewee);
 

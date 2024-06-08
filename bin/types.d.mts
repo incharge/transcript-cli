@@ -7,6 +7,6 @@ export interface config {
     };
 }
 export interface episode {
-    itunesEpisodeUrl: string;
+    spotifyAudioUrl: string;
     interviewee: Array<string>;
 }

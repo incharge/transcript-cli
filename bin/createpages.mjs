@@ -108,10 +108,9 @@ async function generatePage(episodePath, config) {
                 }
         }
         let frontMatter = JSON.stringify(episodeDict, undefined, '\t');
+        // TODO: Get rid of this cludge, it should not be necessary,
+        // but Astro errors if json dates are strings and stringify insists dates are strings
         frontMatter = frontMatter.replace(/^(\t*"publishDate": )"([^"]*)",$/m, "$1$2,");
-        // Yes: frontMatter = frontMatter.replace(/("publishDate": )"([^"]*)",/g, "$1$2,");
-        //frontMatter.replace(/^(\\t)(\1+"publishDate": )"([^"]*)",$/, "$1$2$3,");
-        // '\\t\\t\\t"publishDate": "2024-04-04",'.replace(/^(\\t)(\1+"publishDate": )"([^"]*)",$/, "$1$2$3,,");
         try {
             const pageFile = await fs.open(pagePath, "w");
             await pageFile.write('---\n', undefined, 'utf-8');
