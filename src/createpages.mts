@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'path'; // See https://nodejs.org/api/path.html
-import { icFileToTextLines } from "@incharge/transcript-core"
+import { icStringToTextLines, type TranscriptTextLine } from "@incharge/transcript-core"
 import { config } from './types.mjs';
 // awsToIcLines, type AwsTranscript, type TranscriptSchema
 
@@ -31,6 +31,18 @@ async function getFileModified(path: string): Promise<Date>{
     catch {
     }
     return new Date(0);
+}
+
+// : Array<TranscriptTextLine> | Error
+async function icFileToTextLines(inFile: string) {
+    let icTextLines: Array<TranscriptTextLine> | Error;
+    try {
+        icTextLines = icStringToTextLines(await fs.readFile(inFile, 'utf-8'));
+    }
+    catch (e: any) {
+        icTextLines = Error(e.message);
+    }
+    return icTextLines;
 }
 
 async function generatePage(episodePath: string, config: config): Promise<number> {
@@ -70,7 +82,7 @@ async function generatePage(episodePath: string, config: config): Promise<number
         //     dataDict["vtt"] = dataDict['episodeid'] + '.vtt'
         // }
 
-        if ('published' in dataDict) {
+        if ('published' in dataDict && dataDict.published) {
             // Convert datetime to date
             // dataDict['publishDate'] = datetime.datetime.strptime(dataDict['published'], "%Y-%m-%d")
             dataDict.publishDate = dataDict.published;
@@ -104,7 +116,7 @@ async function generatePage(episodePath: string, config: config): Promise<number
             }
             else switch(key) {
                 case 'transcript':
-                    if ( transcriptModified ) {
+                    if ( transcriptModified.valueOf() ) {
                         const transcriptLines = await icFileToTextLines(transcriptPath);
                         if (transcriptLines instanceof Error) {
                             console.error(transcriptLines.message);
@@ -122,10 +134,15 @@ async function generatePage(episodePath: string, config: config): Promise<number
             }
         }
 
-        try {
+        let frontMatter: string = JSON.stringify(episodeDict, undefined, '\t');
+        // TODO: Get rid of this cludge, it should not be necessary,
+        // but Astro errors if json dates are strings and stringify insists dates are strings
+        frontMatter = frontMatter.replace(/^(\t*"publishDate": )"([^"]*)",$/m, "$1$2,");
+
+        try {            
             const pageFile = await fs.open(pagePath, "w");
             await pageFile.write('---\n', undefined, 'utf-8');
-            await pageFile.write(JSON.stringify(episodeDict, undefined, '\t'), undefined, 'utf-8');
+            await pageFile.write(frontMatter, undefined, 'utf-8');
             await pageFile.write('\n---\n', undefined, 'utf-8');
             if ( dataDict.shownotes && (typeof  dataDict.shownotes == "string") )
                 await pageFile.write(dataDict.shownotes, undefined, 'utf-8');

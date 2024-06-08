@@ -1,6 +1,6 @@
 {
   "name": "@incharge/transcript-cli",
-  "version": "0.0.4-alpha.6",
+  "version": "0.0.4-alpha.9",
   "description": "Work in progress - Command-line interface (CLI) for processing transcripts",
   "author": "Julian Price, inCharge Ltd, UK",
   "license": "ISC",
@@ -17,7 +17,8 @@
     "clean": "rm -rf bin",
     "compile": "tsc",
     "link": "npm link @incharge/transcript-core",
-    "test": "node ./bin/cli.js awstoic test/924-aws-pretty.json test/924-ic-test.json",
+    "test-awstoic": "node ./bin/cli.mjs awstoic test/924-aws-pretty.json test/924-ic-test.json",
+    "test": "rm -f md/*.md && node ./bin/cli.mjs createpages",
     "dev": "npm run compile && npm run test",
     "watch": "npx nodemon -e ts --watch src --exec \"npm run dev\" && exit 1",
     "prepublishOnly": "npm run clean && npm run compile"

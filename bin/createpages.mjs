@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'path'; // See https://nodejs.org/api/path.html
-import { icFileToTextLines } from "@incharge/transcript-core";
+import { icStringToTextLines } from "@incharge/transcript-core";
 async function getFileModified(path) {
     try {
         let stat = await fs.stat(path);
@@ -11,6 +11,17 @@ async function getFileModified(path) {
     catch {
     }
     return new Date(0);
+}
+// : Array<TranscriptTextLine> | Error
+async function icFileToTextLines(inFile) {
+    let icTextLines;
+    try {
+        icTextLines = icStringToTextLines(await fs.readFile(inFile, 'utf-8'));
+    }
+    catch (e) {
+        icTextLines = Error(e.message);
+    }
+    return icTextLines;
 }
 async function generatePage(episodePath, config) {
     const dataDict = JSON.parse(await fs.readFile(episodePath, 'utf-8'));
@@ -46,7 +57,7 @@ async function generatePage(episodePath, config) {
         //     webvttUtils.writeTranscriptToWebVTT(transcriptPath, 'en', vttPath)
         //     dataDict["vtt"] = dataDict['episodeid'] + '.vtt'
         // }
-        if ('published' in dataDict) {
+        if ('published' in dataDict && dataDict.published) {
             // Convert datetime to date
             // dataDict['publishDate'] = datetime.datetime.strptime(dataDict['published'], "%Y-%m-%d")
             dataDict.publishDate = dataDict.published;
@@ -79,7 +90,7 @@ async function generatePage(episodePath, config) {
             else
                 switch (key) {
                     case 'transcript':
-                        if (transcriptModified) {
+                        if (transcriptModified.valueOf()) {
                             const transcriptLines = await icFileToTextLines(transcriptPath);
                             if (transcriptLines instanceof Error) {
                                 console.error(transcriptLines.message);
@@ -96,10 +107,15 @@ async function generatePage(episodePath, config) {
                         console.log(`Missing property: ${key}`);
                 }
         }
+        let frontMatter = JSON.stringify(episodeDict, undefined, '\t');
+        frontMatter = frontMatter.replace(/^(\t*"publishDate": )"([^"]*)",$/m, "$1$2,");
+        // Yes: frontMatter = frontMatter.replace(/("publishDate": )"([^"]*)",/g, "$1$2,");
+        //frontMatter.replace(/^(\\t)(\1+"publishDate": )"([^"]*)",$/, "$1$2$3,");
+        // '\\t\\t\\t"publishDate": "2024-04-04",'.replace(/^(\\t)(\1+"publishDate": )"([^"]*)",$/, "$1$2$3,,");
         try {
             const pageFile = await fs.open(pagePath, "w");
             await pageFile.write('---\n', undefined, 'utf-8');
-            await pageFile.write(JSON.stringify(episodeDict, undefined, '\t'), undefined, 'utf-8');
+            await pageFile.write(frontMatter, undefined, 'utf-8');
             await pageFile.write('\n---\n', undefined, 'utf-8');
             if (dataDict.shownotes && (typeof dataDict.shownotes == "string"))
                 await pageFile.write(dataDict.shownotes, undefined, 'utf-8');
