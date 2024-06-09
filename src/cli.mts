@@ -6,6 +6,7 @@ import minimist from 'minimist';
 import { createPages } from './createpages.mjs';
 import { awsToIc } from './awstoic.mjs';
 import { createIc } from './createic.mjs';
+import { upgrade } from './upgrade.mjs';
 import { config } from './types.mjs';
 
 function usage() {
@@ -52,17 +53,17 @@ async function loadConfig(): Promise<config | undefined> {
         }
     }
 
-    config['vtt-folder'] = path.resolve( config['vtt-folder'] || 'vtt');
+    config['transcript-folder'] = path.resolve( config['transcript-folder'] || 'transcript');
     try {
-        await fs.access(config['vtt-folder'], fs.constants.W_OK);
+        await fs.access(config['transcript-folder'], fs.constants.W_OK);
     } catch {
         isNotExist = true;
     } 
     if (isNotExist) {
         try {
-            await fs.mkdir(config['vtt-folder']);
+            await fs.mkdir(config['transcript-folder']);
         } catch {
-            console.log(`The vtt folder cannot be accessed or created: ${config['vtt-folder']}`);
+            console.log(`The transcript folder cannot be accessed or created: ${config['transcript-folder']}`);
             return undefined;
         }
     }
@@ -83,16 +84,20 @@ async function main() {
         return;
 
     switch(argv['_'][0]) {
+        case 'upgrade':
+            await upgrade(config)
+            break;
+
         case 'createpages':
-            createPages(config)
+            await createPages(config)
             break;
    
         case 'createic':
-            createIc(config)
+            await createIc(config)
             break;
 
         case 'awstoic':
-            awsToIc(argv)
+            await awsToIc(argv)
             break;
 
         default:

@@ -1,7 +1,7 @@
 export interface config {
-    'episode-folder': string;
-    'page-folder': string;
-    'vtt-folder': string;
+    'episode-folder': string,
+    'page-folder': string,
+    'transcript-folder': string,
     defaults: {
         interviewer: Array<string>;
     }

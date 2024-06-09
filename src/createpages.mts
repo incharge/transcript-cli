@@ -1,7 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'path'; // See https://nodejs.org/api/path.html
-import { icStringToTextLines, type TranscriptTextLine } from "@incharge/transcript-core"
-import { config } from './types.mjs';
+// import { icStringToTextLines, type TranscriptTextLine } from "@incharge/transcript-core"
+import { getFileModified, isFile, setExtension } from './utils.mjs';
+import { type config } from './types.mjs';
 // awsToIcLines, type AwsTranscript, type TranscriptSchema
 
 interface episodeIn {
@@ -21,45 +22,33 @@ interface episodeOut {
     //[key: string]: string | boolean | Date | Array<TranscriptLine> | undefined;
 }
 
-async function getFileModified(path: string): Promise<Date>{
-    try {
-        let stat = await fs.stat(path);
-        if ( stat.isFile() ) {
-            return stat.mtime;
-        }
-    }
-    catch {
-    }
-    return new Date(0);
-}
-
 // : Array<TranscriptTextLine> | Error
-async function icFileToTextLines(inFile: string) {
-    let icTextLines: Array<TranscriptTextLine> | Error;
-    try {
-        icTextLines = icStringToTextLines(await fs.readFile(inFile, 'utf-8'));
-    }
-    catch (e: any) {
-        icTextLines = Error(e.message);
-    }
-    return icTextLines;
-}
+// async function icFileToTextLines(inFile: string) {
+//     let icTextLines: Array<TranscriptTextLine> | Error;
+//     try {
+//         icTextLines = icStringToTextLines(await fs.readFile(inFile, 'utf-8'));
+//     }
+//     catch (e: any) {
+//         icTextLines = Error(e.message);
+//     }
+//     return icTextLines;
+// }
 
 async function generatePage(episodePath: string, config: config): Promise<number> {
     const dataDict: episodeIn = JSON.parse(await fs.readFile(episodePath, 'utf-8'));
     // Does the page need to be created or updated?
     const pagePath = path.join(config['page-folder'], dataDict['filename'] + '.md');
-    const transcriptPath = path.join(config['episode-folder'], dataDict['episodeid'], 'transcript.ic.json');
     //const vttPath = path.join(config['vtt-folder'], dataDict['episodeid'] + '.vtt');
     let writePage: number;
     const pageModified = await getFileModified(pagePath);
-    let transcriptModified: Date = new Date(0);
+    //const transcriptPath = path.join(config['transcript-folder'], dataDict['episodeid'], 'transcript.ic.json');
+    //let transcriptModified: Date = await getFileModified(transcriptPath);
+
     if (pageModified.valueOf()) {
         // The page exists. Does it need to be updated?
         // If either the episode data or transcript data has changed?
-        transcriptModified =  await getFileModified(transcriptPath);
         const episodeModified =  await getFileModified(episodePath) as Date; // The file must exist because it was just read
-        const dataModified = episodeModified > transcriptModified ? episodeModified : transcriptModified;
+        const dataModified = episodeModified; // > transcriptModified ? episodeModified : transcriptModified;
         if (dataModified > pageModified) {
             writePage = 1   // The episode data has changed, so the page needs to be updated
         }
@@ -116,21 +105,33 @@ async function generatePage(episodePath: string, config: config): Promise<number
             }
             else switch(key) {
                 case 'transcript':
-                    if ( transcriptModified.valueOf() ) {
-                        const transcriptLines = await icFileToTextLines(transcriptPath);
-                        if (transcriptLines instanceof Error) {
-                            console.error(transcriptLines.message);
-                        }
-                        else {
-                            episodeDict.transcript = transcriptLines;
-                        }
+                    const transcriptFilename = setExtension(dataDict['episodeid'], 'lines.json');
+                    if (await isFile(path.join(config['transcript-folder'], transcriptFilename))) {
+                        episodeDict.transcript = transcriptFilename;
+                        // Store the transcript object in the .md file as a string?
+                        // const transcriptLines = await icFileToTextLines(transcriptPath);
+                        // if (transcriptLines instanceof Error) {
+                        //     console.error(transcriptLines.message);
+                        // }
+                        // else {
+                        //     episodeDict.transcript = JSON.stringify(transcriptLines);
+                        // }
                     }
                     break;
+
+                case 'vtt':
+                    const vttFilename = setExtension(dataDict['episodeid'], 'vtt');
+                    if (await isFile(path.join(config['transcript-folder'], vttFilename))) {
+                        episodeDict.vtt = vttFilename;
+                    }
+                    break;
+
                 case 'draft':
                     episodeDict.draft = false;
                     break;
-                default:
-                    console.log(`Missing property: ${key}`)
+
+                //default:
+                //    console.log(`Missing property: ${key}`)
             }
         }
 
@@ -165,7 +166,7 @@ export async function createPages(config: config) {
     try {
         const files = await fs.readdir(config['episode-folder']);
         for (const file of files) {
-            console.log(`Processing episode folder: ${file}`);
+            //console.log(`Processing episode folder: ${file}`);
             const episodePath = path.join(config['episode-folder'], file, 'episode.json')
             try {
                 const writePage = await generatePage(episodePath, config)
@@ -174,8 +175,8 @@ export async function createPages(config: config) {
                 else if (writePage > 0)
                     updatedCount += 1
                 // else: Unchanged
-            } catch {
-                console.log(`WARNING: Episode file is missing or unreadable: ${episodePath}`);
+            } catch(e) {
+                console.log(`WARNING: Episode file is missing or unreadable: ${episodePath} - ${e}`);
             }
         }
     } catch (err) {

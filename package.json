@@ -18,14 +18,15 @@
     "compile": "tsc",
     "link": "npm link @incharge/transcript-core",
     "test-awstoic": "node ./bin/cli.mjs awstoic test/924-aws-pretty.json test/924-ic-test.json",
-    "test": "rm -f md/*.md && node ./bin/cli.mjs createpages",
+    "test": "rm -f md/*.md && node ./bin/cli.mjs upgrade",
     "dev": "npm run compile && npm run test",
     "watch": "npx nodemon -e ts --watch src --exec \"npm run dev\" && exit 1",
     "prepublishOnly": "npm run clean && npm run compile"
   },
   "dependencies": {
     "@incharge/transcript-core": "^0.0.4-alpha.6",
-    "minimist": "^1.2.8"
+    "minimist": "^1.2.8",
+    "yaml": "^2.4.4"
   },
   "devDependencies": {
     "@types/minimist": "^1.2.5",
