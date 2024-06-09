@@ -1,6 +1,6 @@
 {
   "name": "@incharge/transcript-cli",
-  "version": "0.0.4-alpha.10",
+  "version": "0.0.4-alpha.11",
   "description": "Work in progress - Command-line interface (CLI) for processing transcripts",
   "author": "Julian Price, inCharge Ltd, UK",
   "license": "ISC",
@@ -16,6 +16,7 @@
   "scripts": {
     "clean": "rm -rf bin",
     "compile": "tsc",
+    "build": "tsc",
     "link": "npm link @incharge/transcript-core",
     "test-awstoic": "node ./bin/cli.mjs awstoic test/924-aws-pretty.json test/924-ic-test.json",
     "test": "rm -f md/*.md && node ./bin/cli.mjs upgrade",
