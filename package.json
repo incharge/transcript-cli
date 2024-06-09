@@ -24,7 +24,7 @@
     "prepublishOnly": "npm run clean && npm run compile"
   },
   "dependencies": {
-    "@incharge/transcript-core": "^0.0.4-alpha.6",
+    "@incharge/transcript-core": "^0.0.4-alpha.9",
     "minimist": "^1.2.8",
     "yaml": "^2.4.4"
   },
