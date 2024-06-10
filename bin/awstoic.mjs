@@ -14,7 +14,7 @@ async function AwsFileToIcFile(inFile, outFile) {
         let error;
         // Load the input file
         try {
-            textTranscript = await fs.readFile(inFile, { encoding: 'utf8' });
+            textTranscript = await fs.readFile(inFile, 'utf-8');
         }
         catch (e) {
             error = new Error(`Failed to read ${inFile}: ${e.message}`);
