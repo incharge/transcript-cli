@@ -1,6 +1,6 @@
 {
   "name": "@incharge/transcript-cli",
-  "version": "0.0.4-alpha.11",
+  "version": "0.0.4-alpha.12",
   "description": "Work in progress - Command-line interface (CLI) for processing transcripts",
   "author": "Julian Price, inCharge Ltd, UK",
   "license": "ISC",
@@ -25,7 +25,7 @@
     "prepublishOnly": "npm run clean && npm run compile"
   },
   "dependencies": {
-    "@incharge/transcript-core": "^0.0.4-alpha.9",
+    "@incharge/transcript-core": "^0.0.4-alpha.12",
     "minimist": "^1.2.8",
     "yaml": "^2.4.4"
   },
