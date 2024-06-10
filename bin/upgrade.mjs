@@ -72,8 +72,4 @@ export async function idToEpisodeId(config) {
         console.error(err);
     }
 }
-export async function upgrade(config) {
-    await gitMvYamlJson(config);
-    await idToEpisodeId(config);
-}
 //# sourceMappingURL=upgrade.mjs.map

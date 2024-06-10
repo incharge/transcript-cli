@@ -5,4 +5,3 @@ export interface episodeOut {
 }
 export declare function gitMvYamlJson(config: config): Promise<void>;
 export declare function idToEpisodeId(config: config): Promise<void>;
-export declare function upgrade(config: config): Promise<void>;
