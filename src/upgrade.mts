@@ -79,8 +79,3 @@ export async function idToEpisodeId(config: config) {
         console.error(err);
     } 
 }
-
-export async function upgrade(config: config) {
-    await gitMvYamlJson(config);
-    await idToEpisodeId(config);
-}

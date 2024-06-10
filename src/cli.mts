@@ -6,7 +6,7 @@ import minimist from 'minimist';
 import { createPages } from './createpages.mjs';
 import { awsToIc } from './awstoic.mjs';
 import { createIc } from './createic.mjs';
-import { upgrade } from './upgrade.mjs';
+import { gitMvYamlJson, idToEpisodeId } from './upgrade.mjs';
 import { config } from './types.mjs';
 
 function usage() {
@@ -84,10 +84,14 @@ async function main() {
         return;
 
     switch(argv['_'][0]) {
-        case 'upgrade':
-            await upgrade(config)
+        case 'upgrade1':
+            await gitMvYamlJson(config)
             break;
 
+        case 'upgrade2':
+            await idToEpisodeId(config);
+            break;
+            
         case 'createpages':
             await createPages(config)
             break;
