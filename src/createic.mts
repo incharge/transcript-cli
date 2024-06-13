@@ -85,7 +85,7 @@ async function writeIc(file: string, config: config) {
             if (toModified < fromModified ) {
                 // The aws transcript has been changed/regenerated since the ic transcript was first generated
                 // But don't overwrite it, because it might contain corrections
-                console.log(`WARNING: ${toPath} is older than ${fromPath} by ${fromModified.valueOf()-toModified.valueOf()} ticks. ${toModified.toISOString} vs ${fromModified.toISOString}`)
+                console.log(`WARNING: ${toPath} is older than ${fromPath} by ${fromModified.valueOf()-toModified.valueOf()} ticks. ${toModified.toISOString()} vs ${fromModified.toISOString()}`)
             }
             //else if  (toModified < episodeModified )
             //    console.log(`WARNING: ${icPath} is older than ${episodeModified}`)
