@@ -13,21 +13,21 @@ import { getFileModified, isFile, setExtension } from './utils.mjs';
 //     }
 //     return icTextLines;
 // }
-async function generatePage(episodePath, config) {
+async function generatePage(episodePath, config, starttime) {
     const dataDict = JSON.parse(await fs.readFile(episodePath, 'utf-8'));
     // Does the page need to be created or updated?
     const pagePath = path.join(config['page-folder'], dataDict['filename'] + '.md');
     //const vttPath = path.join(config['vtt-folder'], dataDict['episodeid'] + '.vtt');
     let writePage;
     const pageModified = await getFileModified(pagePath);
-    //const transcriptPath = path.join(config['transcript-folder'], dataDict['episodeid'], 'transcript.ic.json');
-    //let transcriptModified: Date = await getFileModified(transcriptPath);
     if (pageModified.valueOf()) {
         // The page exists. Does it need to be updated?
         // If either the episode data or transcript data has changed?
+        const transcriptPath = path.join(config['episode-folder'], dataDict['episodeid'], 'transcript.ic.json');
+        const transcriptModified = await getFileModified(transcriptPath);
         const episodeModified = await getFileModified(episodePath); // The file must exist because it was just read
-        const dataModified = episodeModified; // > transcriptModified ? episodeModified : transcriptModified;
-        if (dataModified > pageModified) {
+        if (Math.max(starttime.valueOf(), episodeModified.valueOf(), transcriptModified.valueOf())
+            > Math.max(starttime.valueOf(), pageModified.valueOf())) {
             writePage = 1; // The episode data has changed, so the page needs to be updated
         }
         else {
@@ -125,17 +125,18 @@ async function generatePage(episodePath, config) {
     }
     return writePage;
 }
-export async function createPages(config) {
+export async function createPages(config, argv) {
     let createdCount = 0;
     let updatedCount = 0;
     console.log(`Generating pages from ${config['episode-folder']} to ${config['page-folder']}`);
+    const starttime = new Date('starttime' in argv && typeof (argv.starttime) == 'string' ? argv.starttime : 0);
     try {
         const files = await fs.readdir(config['episode-folder']);
         for (const file of files) {
             //console.log(`Processing episode folder: ${file}`);
             const episodePath = path.join(config['episode-folder'], file, 'episode.json');
             try {
-                const writePage = await generatePage(episodePath, config);
+                const writePage = await generatePage(episodePath, config, starttime);
                 if (writePage < 0)
                     createdCount += 1;
                 else if (writePage > 0)

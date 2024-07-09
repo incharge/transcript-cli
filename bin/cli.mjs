@@ -85,7 +85,7 @@ async function main() {
             await idToEpisodeId(config);
             break;
         case 'createpages':
-            await createPages(config);
+            await createPages(config, argv);
             break;
         case 'createic':
             await createIc(config);
