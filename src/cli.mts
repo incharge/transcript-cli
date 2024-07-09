@@ -93,7 +93,7 @@ async function main() {
             break;
             
         case 'createpages':
-            await createPages(config)
+            await createPages(config, argv)
             break;
    
         case 'createic':

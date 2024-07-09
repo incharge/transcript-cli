@@ -33,23 +33,23 @@ interface episodeOut {
 //     }
 //     return icTextLines;
 // }
-
-async function generatePage(episodePath: string, config: config): Promise<number> {
+async function generatePage(episodePath: string, config: config, starttime: Date): Promise<number> {
     const dataDict: episodeIn = JSON.parse(await fs.readFile(episodePath, 'utf-8'));
     // Does the page need to be created or updated?
     const pagePath = path.join(config['page-folder'], dataDict['filename'] + '.md');
     //const vttPath = path.join(config['vtt-folder'], dataDict['episodeid'] + '.vtt');
     let writePage: number;
     const pageModified = await getFileModified(pagePath);
-    //const transcriptPath = path.join(config['transcript-folder'], dataDict['episodeid'], 'transcript.ic.json');
-    //let transcriptModified: Date = await getFileModified(transcriptPath);
 
     if (pageModified.valueOf()) {
         // The page exists. Does it need to be updated?
         // If either the episode data or transcript data has changed?
+        const transcriptPath = path.join(config['episode-folder'], dataDict['episodeid'], 'transcript.ic.json');
+        const transcriptModified: Date = await getFileModified(transcriptPath);
         const episodeModified =  await getFileModified(episodePath) as Date; // The file must exist because it was just read
-        const dataModified = episodeModified; // > transcriptModified ? episodeModified : transcriptModified;
-        if (dataModified > pageModified) {
+        if ( Math.max(starttime.valueOf(), episodeModified.valueOf(), transcriptModified.valueOf())
+            > Math.max(starttime.valueOf(), pageModified.valueOf())
+        ) {
             writePage = 1   // The episode data has changed, so the page needs to be updated
         }
         else {
@@ -60,7 +60,6 @@ async function generatePage(episodePath: string, config: config): Promise<number
         writePage = -1      // The episode data is new, so the page needs to be created
         //transcriptModified = new Date(0);
     }
-
 
     if (writePage) {
         // Write the vtt
@@ -157,19 +156,19 @@ async function generatePage(episodePath: string, config: config): Promise<number
     return writePage
 }
 
-export async function createPages(config: config) {
+export async function createPages(config: config, argv: object) {
 
     let createdCount: number = 0;
     let updatedCount: number = 0;
     console.log(`Generating pages from ${config['episode-folder']} to ${config['page-folder']}`);
-
+    const starttime: Date = new Date('starttime' in argv && typeof(argv.starttime) == 'string' ? argv.starttime : 0);
     try {
         const files = await fs.readdir(config['episode-folder']);
         for (const file of files) {
             //console.log(`Processing episode folder: ${file}`);
             const episodePath = path.join(config['episode-folder'], file, 'episode.json')
             try {
-                const writePage = await generatePage(episodePath, config)
+                const writePage = await generatePage(episodePath, config, starttime)
                 if (writePage < 0)
                     createdCount += 1
                 else if (writePage > 0)
