@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'path'; // See https://nodejs.org/api/path.html
 import { awsToIcLines, icTranscriptToTextLines, icToVtt } from "@incharge/transcript-core";
-import { getFileModified, setExtension } from './utils.mjs';
+import { isFile, setExtension } from './utils.mjs';
 async function fileToObject(transcriptPath) {
     return JSON.parse(await fs.readFile(transcriptPath, 'utf-8'));
 }
@@ -59,36 +59,24 @@ async function AwsFileToIcFile(inFile, episodeFile, outFile, config) {
     return icTranscript;
 }
 async function writeIc(file, config) {
-    // If episode exists and aws transcript exists and ic transcript doesn't
     let fromPath = path.join(config['episode-folder'], file, 'transcript.json');
-    let fromModified = await getFileModified(fromPath);
-    let toPath = path.join(config['episode-folder'], file, 'transcript.ic.json');
-    let toModified = await getFileModified(toPath);
+    let fromExists = await isFile(fromPath);
     const episodePath = path.join(config['episode-folder'], file, 'episode.json');
-    const episodeModified = await getFileModified(episodePath);
-    if (episodeModified.valueOf() && fromModified.valueOf()) {
+    const episodeExists = await isFile(episodePath);
+    let isForce = false; // Force derrived files to be recreated, even if they already exist
+    if (episodeExists && fromExists) {
         let transcript;
         // There is an episode file and an AWS transcript, so there should be derived files too
-        if (toModified.valueOf()) {
-            if (toModified < fromModified) {
-                // The aws transcript has been changed/regenerated since the ic transcript was first generated
-                // But don't overwrite it, because it might contain corrections
-                console.log(`WARNING: ${toPath} is older than ${fromPath} by ${fromModified.valueOf() - toModified.valueOf()} ticks. ${toModified.toISOString()} vs ${fromModified.toISOString()}`);
-            }
-            //else if  (toModified < episodeModified )
-            //    console.log(`WARNING: ${icPath} is older than ${episodeModified}`)
-        }
-        else {
+        let toPath = path.join(config['episode-folder'], file, 'transcript.ic.json');
+        if (!await isFile(toPath)) {
             // Create IC transcript
             console.log(`Writing ${toPath}`);
             transcript = await AwsFileToIcFile(fromPath, episodePath, toPath, config);
-            toModified = new Date();
+            isForce = true;
         }
         fromPath = toPath;
-        fromModified = toModified;
         toPath = path.join(config['transcript-folder'], setExtension(file, 'lines.json'));
-        toModified = await getFileModified(toPath);
-        if (fromModified > toModified) {
+        if (isForce || !await isFile(toPath)) {
             if (!transcript) {
                 transcript = await fileToObject(fromPath);
             }
@@ -98,8 +86,7 @@ async function writeIc(file, config) {
             await fs.writeFile(toPath, JSON.stringify(icTextLines, null, '\t'));
         }
         toPath = path.join(config['transcript-folder'], setExtension(file, 'vtt'));
-        toModified = await getFileModified(toPath);
-        if (fromModified > toModified) {
+        if (isForce || !await isFile(toPath)) {
             if (!transcript) {
                 transcript = await fileToObject(fromPath);
             }
