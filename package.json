@@ -1,6 +1,6 @@
 {
   "name": "@incharge/transcript-cli",
-  "version": "0.0.4-alpha.16",
+  "version": "0.0.4-alpha.17",
   "description": "Work in progress - Command-line interface (CLI) for processing transcripts",
   "author": "Julian Price, inCharge Ltd, UK",
   "license": "ISC",
@@ -8,7 +8,7 @@
   "main": "./bin/cli.mjs",
   "module": "./bin/cli.mjs",
   "bin": {
-    "cli": "./bin/cli.mjs"
+    "cli": "bin/cli.mjs"
   },
   "files": [
     "bin/"
